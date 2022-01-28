@@ -17,7 +17,9 @@ pub struct Job{
     pub files: Vec<FileInfo>,
     pub hist: HistType,
     pub merge: MergeType,
-    pub global_comment: Option<String>
+    pub global_comment: Option<String>,
+    pub bin_size: Option<f64>,
+    pub bin_starting_point: Option<f64>
 }
 
 pub fn example()
@@ -33,7 +35,7 @@ pub fn example()
         ).collect();
     
     let file_info1 = FileInfo{
-        path: "file1.dat".to_owned(),
+        path: "RELATIVE_PATH_FROM_WHERE_YOU_ARE/file1.dat".to_owned(),
         index_hist_left: 0,
         comment: None,
         sep: None,
@@ -52,7 +54,7 @@ pub fn example()
     log_cols2[1].trim_right = Some(14);
 
     let file_info2 = FileInfo{
-        path: "file2.dat".to_owned(),
+        path: "ABSOLUTE_PATH/file2.dat".to_owned(),
         index_hist_left: 0,
         comment: Some("%".to_owned()),
         sep: Some(",".to_owned()),
@@ -67,7 +69,9 @@ pub fn example()
         files: file_vec,
         merge: MergeType::Average,
         hist: HistType::HistIsizeFast,
-        global_comment: Some("#".to_owned())
+        global_comment: Some("#".to_owned()),
+        bin_size: None,
+        bin_starting_point: None
     };
 
     serde_json::to_writer_pretty(std::io::stdout(), &job).unwrap();
@@ -104,6 +108,19 @@ impl Job{
             .expect("Unable to create output file");
         let buf = BufWriter::new(output);
 
-        glued.write(buf).unwrap()
+        match self.bin_size{
+            None => glued.write(buf).unwrap(),
+            Some(bin_size) => {
+                let s = match self.bin_starting_point{
+                    Some(s) => s,
+                    None => {
+                        eprintln!("Warning: bin_size specified, but no bin_starting_point! Using bin_size as bin_starting_point");
+                        bin_size
+                    }
+                };
+                glued.write_rescaled(buf, bin_size, s).unwrap()
+            }
+        }
+        
     }
 }

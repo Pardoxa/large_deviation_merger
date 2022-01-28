@@ -38,7 +38,7 @@ pub fn parse(file: &str) -> Job
     assert!(file_infos_json.is_array(), "'files' must be an array of file infos!");
     let file_array = file_infos_json.as_array().unwrap();
 
-    let comment = json.get("GlobalComment")
+    let comment = json.get("global_comment")
         .map(
             |v|
             {
@@ -109,11 +109,47 @@ pub fn parse(file: &str) -> Job
         None => MergeType::Average
     };
 
+    let bin_size = json.get("bin_size")
+        .map(
+            |size|
+            {
+                match size.as_f64(){
+                    Some(v) => v,
+                    None => {
+                        let error = "bin_size parsing error";
+                        let s = size.as_str()
+                            .expect(error);
+                        s.parse()
+                            .expect(error)
+                    }
+                }
+            }
+        );
+
+    let bin_start = json.get("bin_starting_point")
+        .map(
+            |size|
+            {
+                match size.as_f64(){
+                    Some(v) => v,
+                    None => {
+                        let error = "bin_starting_point parsing error";
+                        let s = size.as_str()
+                            .expect(error);
+                        s.parse()
+                            .expect(error)
+                    }
+                }
+            }
+        );
+
     Job { 
         out, 
         hist: hist_type,
         files: file_infos, 
         merge,
-        global_comment: comment
+        global_comment: comment,
+        bin_size,
+        bin_starting_point: bin_start
     }
 }

@@ -128,6 +128,7 @@
         ]
     }
   ],
-  "out": "converted.out",
-  "global_comment": "#"
+  "out": "merged.out",
+  "global_comment": "#",
+  "bin_size": 0.0006060606060606061
 }
