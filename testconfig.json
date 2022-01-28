@@ -1,0 +1,24 @@
+{
+  "hist": "HistIsizeFast",
+  "files":[
+    {
+        "path": "v0.15.3__REWL_MaxInfected_Sw_0.1_rt_Classic_d50_N3200_f_thr0.0000008_sz256_256_Num24_ov1_w1_trans1.763e-1_rec1.4e-1_gs7485_ms4856829_left0_right1649_iter_0_log10.dat",
+        "index_hist_left": 0,
+        "index_hist_right": null,
+        "log_cols": [
+          {
+            "index": 4,
+            "trim_right": null,
+            "trim_left": null
+          },
+          {
+            "index": 5,
+            "trim_right": null,
+            "trim_left": null
+          }
+        ]
+    }
+  ],
+  "out": "converted.out",
+  "GlobalComment": "#"
+}
