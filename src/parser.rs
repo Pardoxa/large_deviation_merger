@@ -111,8 +111,9 @@ pub fn parse(file: &str) -> Job
 
     Job { 
         out, 
-        hist_type,
-        file_infos, 
-        merge_type: merge
+        hist: hist_type,
+        files: file_infos, 
+        merge,
+        global_comment: comment
     }
 }

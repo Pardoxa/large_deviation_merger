@@ -1,13 +1,14 @@
-use std::{path::PathBuf, io::{BufReader, BufRead}, str::FromStr};
+use std::{io::{BufReader, BufRead}, str::FromStr};
 use serde::{Serialize, Deserialize};
 use core::ops::Deref;
 use std::fs::File;
 use sampling::{HistIsizeFast, Histogram};
 use core::fmt::Debug;
+use crate::LogColRange;
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct FileInfo{
-    pub path: PathBuf,
+    pub path: String,
     pub index_hist_left: usize,
     pub index_hist_right: Option<usize>,
     pub log_cols: Vec<LogCol>,
@@ -259,4 +260,21 @@ impl Deref for LogCol
     fn deref(&self) -> &Self::Target {
         &self.index
     }
+}
+
+pub fn print_log_col_range(opt: LogColRange)
+{
+    let v: Vec<_> = (opt.left..opt.right)
+        .map(
+            |index|
+            {
+                LogCol{
+                    index,
+                    trim_left: opt.trim_left,
+                    trim_right: opt.trim_right
+                }
+            }
+        ).collect();
+    print!("\"log_cols\": ");
+    serde_json::to_writer_pretty(std::io::stdout(), &v).unwrap()
 }
