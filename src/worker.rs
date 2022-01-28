@@ -1,3 +1,5 @@
+use sampling::LogBase;
+
 use crate::*;
 
 
@@ -5,7 +7,8 @@ use crate::*;
 pub struct Job{
     pub out: String,
     pub file_infos: Vec<FileInfo>,
-    pub hist_type: HistType
+    pub hist_type: HistType,
+    pub merge_type: MergeType
 }
 
 
@@ -22,10 +25,17 @@ impl Job{
                         .zip(log.into_iter())
                 }
             ).unzip();
-
-        // important: Base switch will not work, as this assumes to be in base E, even if it was base 10, fix later?
-        let glued = sampling::glue::derivative_merged_and_aligned(log_probs, hists)
-            .expect("Unable to glue");
+        let glued = match self.merge_type
+        {
+            MergeType::Average => {
+                sampling::glue::average_merged_and_aligned(log_probs, hists, LogBase::Base10)
+            },
+            MergeType::Derivative => {
+                sampling::glue::derivative_merged_and_aligned(log_probs, hists, LogBase::Base10)
+            }
+        }.expect("Unable to glue");
+        
+            
 
         let output = File::create(&self.out)
             .expect("Unable to create output file");

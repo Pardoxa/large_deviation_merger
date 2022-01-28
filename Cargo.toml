@@ -8,4 +8,4 @@ edition = "2021"
 [dependencies]
 serde = { version = "1", features = ["derive"]}
 serde_json = "*"
-sampling = {path = "../sampling"}
+sampling = { git = "https://github.com/Pardoxa/sampling.git", rev = "c976c0cf954491c327c7eb89bf7dca8badb360ab" }

@@ -11,6 +11,12 @@ pub enum HistType
     HistIsizeFast
 }
 
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
+pub enum MergeType{
+    Average,
+    Derivative
+}
+
 impl Default for HistType
 {
     fn default() -> Self {
@@ -94,9 +100,19 @@ pub fn parse(file: &str) -> Job
         }
     };
 
+    let merge: MergeType = match json.get("merge")
+    {
+        Some(v) => {
+            serde_json::from_value(v.clone())
+                .expect("Invalid Merge type ('merge')")
+        },
+        None => MergeType::Average
+    };
+
     Job { 
         out, 
         hist_type,
         file_infos, 
+        merge_type: merge
     }
 }
