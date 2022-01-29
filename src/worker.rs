@@ -160,7 +160,6 @@ impl Job{
                 |file_info|
                 {
                     let (hist, log) = file_info.get_logs_and_hists();
-                    println!("{:?}, {:?}", hist, log);
                     hist.into_iter()
                         .zip(log.into_iter())
                 }
