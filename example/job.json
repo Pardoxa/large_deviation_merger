@@ -1,0 +1,270 @@
+{
+  "out": "merged.out",
+  "files": [
+    {
+      "path": "0-1650/v0.15.2__REWL_MaxInfected_Sw_0.1_rt_Classic_d50_N3200_f_thr0.0000008_sz256_256_Num24_ov1_w1_trans1e-1_rec1.4e-1_gs7485_ms4856829_left0_right1649_iter_0_log10.dat",
+      "index_hist_left": 0,
+      "index_hist_right": null,
+      "log_cols": [
+        {
+          "index": 3,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 4,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 5,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 6,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 7,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 8,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 9,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 10,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 11,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 12,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 13,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 14,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 15,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 16,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 17,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 18,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 19,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 20,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 21,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 22,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 23,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 24,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 25,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 26,
+          "trim_right": null,
+          "trim_left": null
+        }
+      ],
+      "comment": null,
+      "sep": null,
+      "shift": null
+    },
+    {
+      "path": "1520-end/v0.15.2__REWL_MaxInfected_Sw_0.1_rt_Classic_d50_N3200_f_thr0.0000008_sz256_256_Num24_ov1_w1_trans1e-1_rec1.4e-1_gs7485_ms44856829_left1520_right3199_iter_0_log10_unf.dat",
+      "index_hist_left": 0,
+      "index_hist_right": null,
+      "log_cols": [
+        {
+          "index": 3,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 4,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 5,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 6,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 7,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 8,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 9,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 10,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 11,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 12,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 13,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 14,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 15,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 16,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 17,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 18,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 19,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 20,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 21,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 22,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 23,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 24,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 25,
+          "trim_right": null,
+          "trim_left": null
+        },
+        {
+          "index": 26,
+          "trim_right": null,
+          "trim_left": null
+        }
+      ],
+      "comment": null,
+      "sep": null,
+      "shift": null
+    }
+  ],
+  "hist": "HistIsizeFast",
+  "merge": "Average",
+  "global_comment": "#",
+  "bin_size": null,
+  "bin_starting_point": null
+}

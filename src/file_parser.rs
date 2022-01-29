@@ -1,19 +1,20 @@
-use std::{io::{BufReader, BufRead}, str::FromStr};
+use std::{io::{BufReader, BufRead, Read}, str::FromStr};
 use serde::{Serialize, Deserialize};
 use core::ops::Deref;
 use std::fs::File;
 use sampling::{HistIsizeFast, Histogram};
 use core::fmt::Debug;
-use crate::LogColRange;
+use crate::{LogColRange};
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub struct FileInfo{
     pub path: String,
-    pub index_hist_left: usize,
+    pub index_hist_left: Option<usize>,
     pub index_hist_right: Option<usize>,
     pub log_cols: Vec<LogCol>,
     pub comment: Option<String>,
-    pub sep: Option<String>
+    pub sep: Option<String>,
+    pub shift: Option<isize>
 }
 
 pub enum LeftRight{
@@ -57,6 +58,33 @@ impl FileInfo{
             )
     }
 
+    fn count_lines<T>(&self, reader: BufReader<T>) -> isize
+    where T: Read
+    {
+        let mut counter: isize = 0;
+        for line in reader.lines()
+        {
+            let s = match line {
+                Ok(s) => s,
+                Err(e) => {
+                    panic!("Error in {:?} while reading file. Error is {:?}", self, e)
+                }
+            };
+            match &self.comment
+            {
+                Some(c) => {
+                    if !s.starts_with(c)
+                    {
+                        counter +=1;
+                    }
+                },
+                None => counter +=1
+            }
+            
+        }
+        counter
+    }
+
     pub fn sort_cols(&mut self)
     {
         self.log_cols.sort_unstable_by_key(|s| s.index);
@@ -77,7 +105,7 @@ impl FileInfo{
             .expect("unable to open file");
         let buf_reader = BufReader::new(file);
 
-        let mut log_probs = vec![Vec::new(); self.log_cols.len()];
+        let mut log_probs: Vec<Vec<f64>> = vec![Vec::new(); self.log_cols.len()];
 
         for line in buf_reader.lines()
         {
@@ -96,6 +124,23 @@ impl FileInfo{
             };
         }
 
+        log_probs.iter_mut()
+            .for_each(
+                |v|
+                {
+                    v.iter_mut()
+                        .for_each(
+                            |val|
+                            {
+                                if !val.is_finite()
+                                {
+                                    *val = f64::NAN;
+                                }
+                            }
+                        )
+                }
+            );
+
         log_probs
     }
 
@@ -105,9 +150,20 @@ impl FileInfo{
             .expect("unable to open file");
         let buf_reader = BufReader::new(file);
 
+        let shift = self.shift.unwrap_or(0);
+
+        let index_hist_left = match self.index_hist_left {
+            Some(v) => v,
+            None => {
+                let lines = self.count_lines(buf_reader);
+                return HistIsizeFast::new(shift, lines + shift)
+                    .expect("unable to create histogram");
+            }
+        };
+
         let mut hist_indizes = vec![
             HistIndex{
-                index: self.index_hist_left,
+                index: index_hist_left,
                 which: LeftRight::Left
             }];
         if let Some(index) = self.index_hist_right{
@@ -178,13 +234,13 @@ impl FileInfo{
                         }
                     );
                 
-                HistIsizeFast::new(left.unwrap(), right.unwrap())
+                HistIsizeFast::new(shift + left.unwrap(), shift + right.unwrap())
 
             },
             None => {
                 let left = *hist_bins[0].first().unwrap();
                 let right_inclusive = *hist_bins[0].last().unwrap();
-                HistIsizeFast::new_inclusive(left, right_inclusive)
+                HistIsizeFast::new_inclusive(shift + left, shift + right_inclusive)
             }
         }.unwrap()
     }
@@ -295,3 +351,4 @@ pub fn print_log_col_range(opt: LogColRange)
     print!("\"log_cols\": ");
     serde_json::to_writer_pretty(std::io::stdout(), &v).unwrap()
 }
+

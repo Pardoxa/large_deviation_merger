@@ -1,4 +1,4 @@
-use std::{fs::File, io::BufReader};
+use std::{fs::File, io::BufReader, str::FromStr};
 use serde::{Deserialize, Serialize};
 use serde_json::{from_reader, Value};
 
@@ -7,7 +7,6 @@ use crate::*;
 #[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub enum HistType
 {
-    HistUsizeFast,
     HistIsizeFast
 }
 
@@ -15,6 +14,19 @@ pub enum HistType
 pub enum MergeType{
     Average,
     Derivative
+}
+
+impl FromStr for MergeType 
+{
+    type Err = &'static str;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s
+        {
+            "a" | "average" | "Average" => Ok(Self::Average),
+            "d" | "derivative" | "Derivative" => Ok(Self::Derivative),
+            _ => Err("Invalid Merge type. Options are 'Average' or 'Derivative'")
+        }
+    }
 }
 
 impl Default for HistType
@@ -40,13 +52,17 @@ pub fn parse(file: &str) -> Job
     assert!(file_infos_json.is_array(), "'files' must be an array of file infos!");
     let file_array = file_infos_json.as_array().unwrap();
 
-    let comment = json.get("global_comment")
-        .map(
-            |v|
-            {
-                v.as_str().expect("Invalid 'global_comment'").to_owned()
+    let comment = match json.get("global_comment")
+    {
+        Some(v) => {
+            if v.is_null() {
+                None
+            } else {
+                Some(v.as_str().expect("Invalid 'global_comment'").to_owned())
             }
-        );
+        },
+        None => None
+    };
 
 
     let mut file_infos: Vec<FileInfo> = file_array.iter()
@@ -111,39 +127,50 @@ pub fn parse(file: &str) -> Job
         None => MergeType::Average
     };
 
-    let bin_size = json.get("bin_size")
-        .map(
-            |size|
-            {
-                match size.as_f64(){
-                    Some(v) => v,
-                    None => {
-                        let error = "bin_size parsing error";
-                        let s = size.as_str()
-                            .expect(error);
-                        s.parse()
-                            .expect(error)
+    let bin_size = match json.get("bin_size"){
+        None => None,
+        Some(v) => {
+            if v.is_null() {
+                None
+            } else {
+                Some(
+                    match v.as_f64(){
+                        Some(v) => v,
+                        None => {
+                            let error = "bin_size parsing error";
+                            let s = v.as_str()
+                                .expect(error);
+                            s.parse()
+                                .expect(error)
+                        }
                     }
-                }
+                )
             }
-        );
+        }
+    };
 
-    let bin_start = json.get("bin_starting_point")
-        .map(
-            |size|
-            {
-                match size.as_f64(){
-                    Some(v) => v,
-                    None => {
-                        let error = "bin_starting_point parsing error";
-                        let s = size.as_str()
-                            .expect(error);
-                        s.parse()
-                            .expect(error)
+    let bin_start = match json.get("bin_starting_point")
+    {
+        None => None,
+        Some(v) => {
+            if v.is_null() {
+                None
+            } else {
+                Some(
+                    match v.as_f64(){
+                        Some(v) => v,
+                        None => {
+                            let error = "bin_starting_point parsing error";
+                            let s = v.as_str()
+                                .expect(error);
+                            s.parse()
+                                .expect(error)
+                        }
                     }
-                }
+                )
             }
-        );
+        }
+    };
 
     Job { 
         out, 

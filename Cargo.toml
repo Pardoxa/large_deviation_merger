@@ -8,6 +8,7 @@ edition = "2021"
 [dependencies]
 serde = { version = "1", features = ["derive"]}
 serde_json = "^1.0.78"
-sampling = { git = "https://github.com/Pardoxa/sampling.git", rev = "07fc5767484802e25486f641711403dded722826" }
+sampling = { git = "https://github.com/Pardoxa/sampling.git", rev = "08c6e6d335d6d954314458c3f3325dd018f3f214" }
 #sampling = {path="../sampling"}
 structopt = "^0.3.26"
+glob = "0.3.0"
