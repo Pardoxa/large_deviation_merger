@@ -5,12 +5,10 @@ use{
 mod file_parser;
 mod parser;
 mod worker;
-mod cmd;
 
 pub use file_parser::*;
 pub use parser::*;
 pub use worker::*;
-pub use cmd::*;
 
 fn main() {
 

@@ -2,8 +2,29 @@
 
 Used to Merge Large deviation WangLandau and Entropic sampling simulations.
 
+## Installation instructions:
+
+First you need to install Rust - this needs at least version 1.56.0 - anything newer should also work
+
+[Install Rust](https://rustup.rs/) 
+
+* Clone this repository
+* in this folder execute `cargo b --release`
+* the executable will is now at `./target/release/large_deviation_merger`
+
+## Usage
+
+I recommand creating a symbolic link to the executable and appending that to your PATH,
+so you can call it from anywhere
+
+```bash
+large_deviation_merger --help
+```
+will print your options. You will want to use the `merge` Subcommand 
 
 ## Example json
+
+Note: omiting any object/value is equivalent to setting it to `null`
 
 ```json
 {
@@ -16,8 +37,8 @@ Used to Merge Large deviation WangLandau and Entropic sampling simulations.
       "log_cols": [ <- indices of the logarithmic probability
         {
           "index": 3, <-- the forth colum is the first one we wish to use
-          "trim_right": null, <-- We do not which to trim the interval from the right - note: NaNs are automatically trimed
-          "trim_left": null <-- We do not which to trim the interval from the left - note: NaNs are automatically trimed
+          "trim_right": null, <-- We do not wish to trim the interval from the right - note: NaNs are automatically trimed
+          "trim_left": null <-- We do not wish to trim the interval from the left - note: NaNs are automatically trimed
         },
         {
           "index": 4,
@@ -45,13 +66,13 @@ Used to Merge Large deviation WangLandau and Entropic sampling simulations.
         }
       ],
       "comment": "%", <-- In this file, comments are specified by "%"
-      "sep": "," <-- also, the seperator is "%"
+      "sep": "," <-- also, the seperator is ","
     }
   ],
-  "hist": "HistIsizeFast", <--- No other Histogram is implemented yet
+  "hist": "HistIsizeFast", <--- No other Histogram is implemented yet - can be omitted, this is the default
   "merge": "Average", <--- alternative mode: Derivative
   "global_comment": "#", <-- Specify what a line must start with to be ignored
-  "bin_size": null, <--- you can specify a bin size, to normalize the integral instead of the sum
+  "bin_size": null, <--- you can specify a bin size (float), to normalize the integral instead of the sum
   "bin_starting_point": null <-- if you do specify a bin_size, what were should the merged interval start? 
 }
 ```

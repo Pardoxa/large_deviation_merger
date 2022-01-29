@@ -59,13 +59,15 @@ impl FileInfo{
 
     pub fn sort_cols(&mut self)
     {
-        self.log_cols.sort_unstable_by_key(|s| *s.deref());
+        self.log_cols.sort_unstable_by_key(|s| s.index);
         let len = self.log_cols.len();
         self.log_cols
             .dedup_by_key(|a| a.index);
 
         if len != self.log_cols.len() {
             eprintln!("Warning, deleted duplicate columns in {:?}", self);
+            eprintln!("Note: If you actually wish to include an interval muliple times you can \
+                - you have to specify the same file twice in the file array");
         }
     }
 
@@ -139,6 +141,21 @@ impl FileInfo{
                 None => self.collect_vals(line.split_whitespace(), iter, &mut hist_bins)
             };
         }
+
+        hist_bins.iter()
+            .for_each(
+                |hist_vec| 
+                {
+                    let sorted = hist_vec.iter()
+                        .zip(hist_vec.iter().skip(1))
+                        .all(|(&a, &b)| a < b);
+                    assert!(
+                        sorted, 
+                        "Error: Your Histogram is not ordered correctly- it has to start with the smallest value and go up monotonically {:?}", 
+                        self
+                    );
+                }
+            );
         
         match self.index_hist_right{
             Some(_) => {
@@ -218,7 +235,7 @@ impl FileInfo{
                         }
                     }
 
-                    // remove NaNs
+                    // remove NaNs and trim interval
                     *log_vec = log_vec[index_left..=index_right].to_vec();
                     
                     let mut iter = e_hist.bin_iter();
@@ -228,7 +245,7 @@ impl FileInfo{
                     let right = iter.nth(diff).unwrap();
                     let hist = HistIsizeFast::new_inclusive(left, right).unwrap();
                     
-                    assert_eq!(hist.bin_count(), log_vec.len(), "Lenght of Hist does not match length of logvec");
+                    assert_eq!(hist.bin_count(), log_vec.len(), "Lenght of Hist does not match length of log_vec");
                     hist
                 }
             ).collect();

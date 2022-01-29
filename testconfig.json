@@ -11,9 +11,7 @@
             "trim_left": 2
           },
           {
-            "index": 4,
-            "trim_right": null,
-            "trim_left": null
+            "index": 4
           },
           {
             "index": 5,

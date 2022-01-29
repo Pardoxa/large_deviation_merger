@@ -34,7 +34,9 @@ pub fn parse(file: &str) -> Job
     let json: Value = from_reader(reader)
         .expect("Invalid Json");
 
-    let file_infos_json = json.get("files").unwrap();
+    let file_infos_json = json.get("files")
+        .expect("Json is missing array 'files'");
+    
     assert!(file_infos_json.is_array(), "'files' must be an array of file infos!");
     let file_array = file_infos_json.as_array().unwrap();
 
@@ -42,7 +44,7 @@ pub fn parse(file: &str) -> Job
         .map(
             |v|
             {
-                v.as_str().expect("Invalid Global Comment").to_owned()
+                v.as_str().expect("Invalid 'global_comment'").to_owned()
             }
         );
 
@@ -73,9 +75,9 @@ pub fn parse(file: &str) -> Job
             match serde_json::from_value(val.clone()){
                 Ok(hist) => hist,
                 Err(e) => {
-                    eprintln!("Error: {:?}", e);
+                    eprintln!("Error: {:?} Invalid Hist Type - currently only one type is implemented, so I will fallback to the default", e);
                     // TODO Print out valid types
-                    panic!("Invalid Hist Type")
+                    HistType::default()
                 }
             }
         },
@@ -90,7 +92,7 @@ pub fn parse(file: &str) -> Job
         Some(v) => {
             match v.as_str(){
                 Some(out) => out.to_owned(),
-                None => panic!("Invalid output type - should be strintg")
+                None => panic!("Invalid output type - should be string. Note: This is the file that will be created for the output")
             }
         },
         None => {
