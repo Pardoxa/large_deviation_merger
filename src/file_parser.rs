@@ -14,7 +14,8 @@ pub struct FileInfo{
     pub log_cols: Vec<LogCol>,
     pub comment: Option<String>,
     pub sep: Option<String>,
-    pub shift: Option<isize>
+    pub shift: Option<isize>,
+    pub missing: Option<String>
 }
 
 pub enum LeftRight{
@@ -28,6 +29,22 @@ pub struct HistIndex
     index: usize
 }
 
+// Dyn iter. Because I wanted to try out dyn trait objects
+fn get_iter<'a>(sep: &'a Option<String>, line: &'a str) -> Box<dyn Iterator<Item=&'a str> + 'a>
+{
+    match sep{
+        None => {
+            Box::new(
+                line.split_whitespace()
+            )
+        },
+        Some(s) => {
+            Box::new(
+                line.split(s)
+            )
+        }
+    }
+}
 
 impl FileInfo{
 
@@ -56,6 +73,77 @@ impl FileInfo{
                     vec.push(val);
                 }
             )
+    }
+
+    fn collect_floats<'a, I, I2>(&self, mut iter: I, sorted_index_iter: I2, target: &mut [Vec<f64>])
+    where I: Iterator<Item=&'a str>,
+        I2: Iterator<Item=usize>,
+    {
+        let mut last_index_absolute = 0;
+        sorted_index_iter
+            .zip(target.iter_mut())
+            .for_each(
+                |(index_absolute, vec)|
+                {
+                    let index_rel = index_absolute - last_index_absolute;
+                    last_index_absolute = index_absolute + 1;
+                    let nth = match iter.nth(index_rel){
+                        Some(v) => v,
+                        None => panic!("Error, column {:?} does not exist in {:?}", index_absolute, self)
+                    };
+                    
+                    let val: f64 = match nth.parse(){
+                        Ok(v) => v,
+                        Err(e) => {
+                            match &self.missing{
+                                Some(m) if m == nth => {
+                                    f64::NAN
+                                },
+                                _ => panic!("Parse error {:?} in column {:?} in {:?}", e, index_absolute, self)
+                            }
+                        }
+                    };
+                    vec.push(val);
+                }
+            )
+    }
+
+    fn count_cols(&self, global_comment: &Option<String>) -> usize
+    {
+        let file = File::open(&self.path)
+            .expect("Unable to open file");
+        let buf = BufReader::new(file);
+
+        for line in buf.lines()
+        {
+            let string = line.unwrap();
+            if let Some(c) = &self.comment{
+                if string.starts_with(c){
+                    continue;
+                }
+            } else if let Some(c) = global_comment {
+                if string.starts_with(c){
+                    continue;
+                }
+            }
+            let iter = get_iter(&self.sep, &string);
+            return iter.count();
+        }
+        
+        0
+    }
+
+    pub fn log_cols_till_end(&mut self, global_comment: &Option<String>)
+    {
+        let count = self.count_cols(global_comment);
+        assert_eq!(self.log_cols.len(), 1);
+        let next_index = self.log_cols[0].index + 1;
+
+        self.log_cols
+            .extend(
+                (next_index..count)
+                    .map(LogCol::new)
+            );
     }
 
     fn count_lines<T>(&self, reader: BufReader<T>) -> isize
@@ -119,8 +207,8 @@ impl FileInfo{
             let iter = self.log_cols.iter().map(|e| e.index);
 
             match &self.sep{
-                Some(sep) => self.collect_vals(line.split(sep), iter, &mut log_probs),
-                None => self.collect_vals(line.split_whitespace(), iter, &mut log_probs)
+                Some(sep) => self.collect_floats(line.split(sep), iter, &mut log_probs),
+                None => self.collect_floats(line.split_whitespace(), iter, &mut log_probs)
             };
         }
 

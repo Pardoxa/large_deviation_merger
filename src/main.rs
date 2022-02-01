@@ -17,7 +17,10 @@ fn main() {
         Opt::Merge(m) => merge(m),
         Opt::LogColRange(opt) => print_log_col_range(opt),
         Opt::ExampleJson => worker::example(),
-        Opt::CreateJob(opt) => glob_create(opt)
+        Opt::CreateJob(mut opt) => {
+            opt.make_valid();
+            glob_create(opt)
+        }
     }
 }
 
@@ -90,6 +93,12 @@ pub struct CreateJob
     /// rightest column, exclusive. Can be omitted if only one column should be considered
     pub log_col_right: Option<usize>,
 
+    /// Start from log_col_left and figure out how many columns there are by 
+    /// reading the files in question.
+    /// Incompatible with option `log_col_right` 
+    #[structopt(long, short)]
+    pub end: bool,
+
     /// Name of output file
     #[structopt(long, short, default_value = "merged.out")]
     pub out: String,
@@ -117,5 +126,20 @@ pub struct CreateJob
 
     #[structopt(long, short)]
     /// Used to shift the histograms
-    pub shift: Option<isize>
+    pub shift: Option<isize>,
+
+    #[structopt(long)]
+    /// What is the identifier for missing Values? Default: NaN
+    pub missing: Option<String>
+}
+
+impl CreateJob
+{
+    fn make_valid(&mut self){
+        if self.end && self.log_col_right.is_some()
+        {
+            eprintln!("WARNING: Option log_col_write will be overwritten due to flag `end`");
+            self.log_col_right = None;
+        }
+    }
 }

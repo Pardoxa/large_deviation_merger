@@ -46,27 +46,28 @@ pub fn glob_create(options: CreateJob)
                     Ok(path) => {
                         let path = path.to_str().unwrap().to_owned();
                         
-                        let log_cols: Vec<_> = (options.log_col_left..right)
-                            .map(
-                                |index|
-                                {
-                                    LogCol{
-                                        index,
-                                        trim_left: None,
-                                        trim_right: None
-                                    }
-                                }
-                            ).collect();
+                        let log_cols: Vec<_> = if options.end {
+                            vec![LogCol::new(options.log_col_left)]
+                        } else {
+                             (options.log_col_left..right)
+                                .map(LogCol::new)
+                                .collect()
+                        };
+                        
 
-                        let f = FileInfo{
+                        let mut f = FileInfo{
                             path,
                             index_hist_left: options.hist_col_left,
                             index_hist_right: options.hist_col_right,
                             comment: None,
                             sep: None,
                             log_cols,
-                            shift: options.shift
+                            shift: options.shift,
+                            missing: options.missing.clone()
                         };
+                        if options.end{
+                            f.log_cols_till_end(&options.global_comment);
+                        }
                         Some(f)
                     }
                 }
@@ -112,7 +113,8 @@ pub fn example()
         sep: None,
         log_cols: log_cols1,
         index_hist_right: None,
-        shift: Some(23)
+        shift: Some(23),
+        missing: None
     };
 
     let mut log_cols2: Vec<_> = (3..5)
@@ -132,7 +134,8 @@ pub fn example()
         sep: Some(",".to_owned()),
         log_cols: log_cols2,
         index_hist_right: Some(1),
-        shift: None
+        shift: None,
+        missing: Some("NONE".to_string())
     };
 
     let file_vec = vec![file_info1, file_info2];
